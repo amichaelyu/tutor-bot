@@ -1,22 +1,29 @@
-// making sure required files exist
+// making sure required packages exist and define them
 const fs = require('fs');
 const Discord = require('discord.js');
 const {prefix, token} = require('./config.json');
 const nodemon = require('nodemon');
 const execSync = require('child_process').execSync;
-const openChannels = ['math', 'english'];
 const baudio = require('baudio');
 
+
+// time till deletes notifications
+const wipe = 4000;
+
+// logs
+const logs = false;
+
+// curently live subject
+const subjects = ['math', 'english'];
+
+
 // defines boop
-{
-    let n = 0;
-    var boop = baudio(function (t) {
-        return Math.sin(t * 200 * Math.PI * 5) + Math.sin(t * 500) * (t % 2 > 1);
-    });
-}
+const boop = baudio(function (t) {
+    return Math.sin(t * 200 * Math.PI * 5) + Math.sin(t * 500) * (t % 2 > 1);
+});
 
 // bot is made as client
-const client = new Discord.Client();
+const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] });
 
 // makes place to store the commands
 client.commands = new Discord.Collection();
@@ -51,17 +58,12 @@ client.on('message', message => {
     
         // copies what you say
         if (command === 'copy') {
-            client.commands.get('copy').execute(message, args);
+            client.commands.get('copy').execute(message, args, logs);
         }
 
         // deletes usesless stuff
         else if (command === 'd') {
-            client.commands.get('delete').execute(message, args);
-        }
-
-        // creates some number of categories
-        else if (command == 'create') {
-            client.commands.get('create').execute(message, args);
+            client.commands.get('delete').execute(message, args, wipe);
         }
 
         // kills client
@@ -73,23 +75,23 @@ client.on('message', message => {
     
     // channel creation
     else if (message.channel.name.endsWith("-questions") && !message.author.bot){
-        for (chan of openChannels) {
-            if (message.channel.name === chan + '-questions') {
-                client.commands.get('create').execute(message, args);
+        for (chan of subjects) {
+            if (message.channel.name === `${chan}-questions`) {
+                client.commands.get('create').execute(message, args, wipe, logs);
                 return;
             }
         }
     }
 
     // reacts to bot posting in ans channel
-    else if (message.channel.name.endsWith('-ans') && message.author.bot){
-        message.react('✅')
+    else if (message.channel.name.endsWith('-ans') && message.author.bot && message.embeds.length !== 0){
+        message.react('✅');
     }
 
     // reacts to bot posting in private channel
     else if (message.channel.name.includes('-questions') && message.author.bot){
-        for (i of openChannels) {
-            if (message.channel.name.startsWith(i + '-questions') && message.channel.name !== i + '-questions') {
+        for (i of subjects) {
+            if (message.channel.name.startsWith(`${i}-questions`) && message.channel.name !== `${i}-questions`) {
                 message.react('❌')
                 return;
             }
@@ -99,18 +101,33 @@ client.on('message', message => {
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
-    if (reaction.author.bot) { return; }
-    if (reaction.partial) {
-		try {
-			await reaction.fetch();
-		} catch (error) {
-			console.error('Something went wrong when fetching the message: ', error);
-			return;
-		}
-    }
-    // reaction.message.author()
-    console.log(reaction.message.title);
     
+    // checks if bot
+    if (user.bot) return;
+
+    // checks if it is a cached partial
+    if (reaction.partial) {
+        try {
+            await reaction.fetch();
+        } catch (error) {
+            console.error('Something went wrong when fetching the message: ', error);
+            return;
+        }
+    }
+    
+    // gives tutors perms to help
+    if (reaction.message.channel.name.endsWith('-ans')) {
+        client.commands.get('reactOpen').execute(reaction, user, subjects, wipe);
+    }
+
+    else if (reaction.message.channel.name.includes('-questions')){
+        for (i of subjects) {
+            if (reaction.message.channel.name.startsWith(`${i}-questions`) && reaction.message.channel.name !== `${i}-questions`) {
+                client.commands.get('reactClose').execute(reaction, user, `${i}-ans`, logs);
+                return;
+            }
+        }
+    }
 });
 
 // logs in bot

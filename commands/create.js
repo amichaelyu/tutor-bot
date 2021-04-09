@@ -1,25 +1,31 @@
 module.exports = {
 	name: 'create',
 	description: 'creates tutor rooms',
-	execute(message, args) {
+	execute(message, args, wipe, logs) {
         message.delete();
         async function create() {
+
+            // checks if user already has an open question
+            // for (i in subjects) {
+                // if (tempUser.cache.some(r => r.name.startsWith(`${subjects[i]}-questions`))) {}
+                
+            // loops through options to find closed channel
             for (z = 0; z < 100; z++) {
-                let temp = message.channel.name + z;
-                if (!message.guild.roles.cache.find(r => r.name === temp)) {
+
+                // new channel name
+                const tempChan = message.channel.name + z;
+
+                // checks if channel already exists
+                if (!message.guild.roles.cache.find(r => r.name === tempChan) || !message.guild.channels.cache.find(c => c.name === tempChan)) {
+
                     // creates role
-                    await message.guild.roles.create({ data: {name: temp} });
-                    
-                    // finds the role that was just created
-                    let tempRole = await message.guild.roles.cache.find(r => r.name === temp).id;
+                    const tempRole = await message.guild.roles.create({ data: {name: tempChan} });
                     
                     // give author role
                     message.member.roles.add(tempRole);
-                    
-                    // console.log(message.guild.roles.cache.find(r => r.name === chan).id)
-                    // console.log(tempRole)
+
                     // creates category
-                    await message.guild.channels.create(temp, {
+                    await message.guild.channels.create(tempChan, {
                         type: 'category',
                         permissionOverwrites: [{
                             id: tempRole,
@@ -34,45 +40,47 @@ module.exports = {
                     });
 
                     // creates text channel
-                    await message.guild.channels.create(temp, {
+                    await message.guild.channels.create(tempChan, {
                         type: 'text',
                         topic: 'React with the red X to close',
-                        parent: message.guild.channels.cache.find(c => c.name === temp),
+                        parent: message.guild.channels.cache.find(c => c.name === tempChan),
                     });
 
                     // creates voice channel
-                    message.guild.channels.create(temp, {
+                    message.guild.channels.create(tempChan, {
                         type: 'voice',
-                        parent: message.guild.channels.cache.find(c => c.name === temp),
+                        parent: message.guild.channels.cache.find(c => c.name === tempChan),
                     });
 
                     // sends message in answering channel
-                    await message.guild.channels.cache.find(c => c.name === chan + '-ans').send({embed: {
+                    await message.guild.channels.cache.find(c => c.name === `${chan}-ans`).send({embed: {
                         color: 3447003,
-                        title: chan + '-questions' + z,
+                        title: `${chan}-questions${z}`,
                         image: message.attachments.first(),
                         description: message.content,
                     }});
 
                     // sends message in private channel
-                    await message.guild.channels.cache.find(d => d.name === chan + '-questions' + z && d.type === 'text').send({embed: {
+                    await message.guild.channels.cache.find(d => d.name === `${chan}-questions${z}` && d.type === 'text').send({embed: {
                         color: 3447003,
-                        title: chan + '-questions' + z,
+                        title: `${chan}-questions${z}`,
                         image: message.attachments.first(),
                         description: message.content,
                     }});
 
                     // instruction to user
-                    message.reply('Please join ' + chan + '-questions' + z);
-                    setTimeout(() => message.channel.bulkDelete(1, true), 2000);
+                    let tempMes = await message.reply(`Please join ${chan}-questions${z}`);
+                    setTimeout(() => tempMes.delete(), wipe);
 
                     // bot logs
-                    message.guild.channels.cache.find(c => c.name === 'bot-logs').send({embed: {
-                        color: 3447003,
-                        title: 'CREATED: ' + message.channel.name + z,
-                        description: 'Maker: ' + message.author.tag,
-                        timestamp: new Date(),
-                    }})
+                    if (logs) {
+                        message.guild.channels.cache.find(c => c.name === 'bot-logs').send({embed: {
+                            color: 3447003,
+                            title: 'CREATED: ' + message.channel.name + z,
+                            description: 'Maker: ' + message.author.tag,
+                            timestamp: new Date(),
+                        }})
+                    }
 
                     return;
                 }
