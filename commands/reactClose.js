@@ -4,8 +4,7 @@ module.exports = {
 	execute(reaction, user, ans, logs) {    
 
         // finds channel name from embed title
-        reaction.message.embeds.forEach(embed => tempChan = embed.title);
-
+        reaction.message.embeds.find(embed => tempChan = embed.title);
         // tries to delete channels + role
         try {
             // deletes channels (category, text, voice)
@@ -16,9 +15,11 @@ module.exports = {
             // deletes role
             reaction.message.guild.roles.cache.find(r => r.name === tempChan).delete();
             
-            // deletes answer call
-            let ansChan = reaction.message.guild.channels.cache.find(c => c.name === ans && c.type === 'text');
-            console.log(ansChan.messages.cache);
+            // deletes answer calling message
+            const ansChan = reaction.message.guild.channels.cache.find(c => c.name === ans && c.type === 'text');
+            ansChan.messages.cache.find(mes => tempEmb = mes.embeds.find(emb => emb.title === tempChan)).delete();
+            //const tempC = tempEmb.find(emb => emb.title === tempChan);
+            // console.log(tempEmb)
 
         } catch (err) {
             // logs errors in #bot-logs
