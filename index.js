@@ -1,10 +1,11 @@
 // making sure required packages exist and define them
 const fs = require('fs');
 const Discord = require('discord.js');
-const {prefix, token} = require('./config.json');
-// require('dotenv').config();
-// const prefix = process.env.PREFIX;
-// const token = process.env.TOKEN;
+const keepAlive = require('./server');
+// const {prefix, token} = require('./config.json');
+require('dotenv').config();
+const prefix = process.env.PREFIX;
+const token = process.env.TOKEN;
 const nodemon = require('nodemon');
 const execSync = require('child_process').execSync;
 // const baudio = require('baudio');
@@ -143,6 +144,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		}
 	}
 });
+
+// keeps alive
+keepAlive();
 
 // logs in bot
 client.login(token);
