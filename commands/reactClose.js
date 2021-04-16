@@ -26,7 +26,7 @@ module.exports = {
             reaction.message.guild.channels.cache.find(c => c.name === 'bot-logs').send({embed: {
                 color: 3447003,
                 title: "CLOSING ERROR",
-                description: `Channel: ${tempChan} \n Closer: <@${user.id}> \n ${err}`,
+                description: `Channel: ${tempChan} \nCloser: <@${user.id}> \n ${err}`,
                 timestamp: new Date(),
             }})
         }
@@ -36,7 +36,7 @@ module.exports = {
             reaction.message.guild.channels.cache.find(c => c.name === 'bot-logs').send({embed: {
                 color: 3447003,
                 title: "CLOSED",
-                description: `Channel: ${tempChan} \n Closer: <@${user.id}>`,
+                description: `Channel: ${tempChan} \nCloser: <@${user.id}>`,
                 timestamp: new Date(),
             }})
         }

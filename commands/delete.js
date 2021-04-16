@@ -12,6 +12,7 @@ module.exports = {
 				color: 3447003,
 				title: "DELETE ERROR",
 				description: `Channel: ${message.channel.name} \n Deletor: <@${message.author.id}> \n ${err}`,
+                timestamp: new Date(),
 			}})
 		});
 

@@ -25,7 +25,7 @@ module.exports = {
                         reaction.message.guild.channels.cache.find(c => c.name === 'bot-logs').send({embed: {
                             color: 3447003,
                             title: "ERROR PREVENTING ROLE",
-                            description: `Channel: ${reaction.message.channel} \n User: <@${user.id}>`,
+                            description: `Channel: ${reaction.message.channel} \nUser: <@${user.id}>`,
                             timestamp: new Date(),
                         }})
                     }

@@ -76,8 +76,9 @@ module.exports = {
                     if (logs) {
                         message.guild.channels.cache.find(c => c.name === 'bot-logs').send({embed: {
                             color: 3447003,
-                            title: 'CREATED: ' + message.channel.name + z,
-                            description: 'Maker: ' + message.author.tag,
+                            title: `CREATED: ${message.channel.name}${z}`,
+                            description: `Creator: <@${message.author.id}> \nMessage: ${message.content}`,
+                            image: message.attachments.first(),
                             timestamp: new Date(),
                         }})
                     }

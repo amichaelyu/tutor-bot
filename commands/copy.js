@@ -8,7 +8,8 @@ module.exports = {
 			message.guild.channels.cache.find(c => c.name === 'bot-logs').send({embed: {
 				color: 3447003,
 				title: "COPIED",
-				description: `Copied: ${args.join(' ')} \n Channel: ${message.channel.name}`,
+				description: `Copied: ${args.join(' ')} \nChannel: ${message.channel.name}`,
+                timestamp: new Date(),
 			}})
 		}
 	},
