@@ -2,10 +2,12 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const keepAlive = require('./server');
-const {prefix, token} = require('./config.json');
-// require('dotenv').config();
-// const prefix = process.env.PREFIX;
-// const token = process.env.TOKEN;
+// const {prefix, token} = require('./config.json');
+
+require('dotenv').config();
+const prefix = process.env.PREFIX;
+const token = process.env.TOKEN;
+
 const nodemon = require('nodemon');
 const execSync = require('child_process').execSync;
 // const baudio = require('baudio');
@@ -20,9 +22,9 @@ const logs = true;
 const subjects = ['math', 'english'];
 
 // defines boop
-const boop = baudio(function (t) {
-   return Math.sin(t * 200 * Math.PI * 5) + Math.sin(t * 500) * (t % 2 > 1);
-});
+// const boop = baudio(function (t) {
+//    return Math.sin(t * 200 * Math.PI * 5) + Math.sin(t * 500) * (t % 2 > 1);
+// });
 
 // bot is made as client
 const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] });
@@ -44,7 +46,7 @@ for (const file of commandFiles) {
 // what the bot does when it starts
 client.on('ready', () => {
 	console.log(`Logged in!`);
-	boop.play();
+	// boop.play();
 });
 
 //  when the bot recieves a message
